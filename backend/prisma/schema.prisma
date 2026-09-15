@@ -36,17 +36,19 @@ enum AdjustmentType {
 
 //models
 model User {
-  id               String            @id @default(uuid()) @db.Uuid
-  name             String
-  email            String            @unique
-  passwordHash     String            @map("password_hash")
-  role             UserRole          @default(STAFF)
-  status           RecordStatus      @default(ACTIVE)
-  createdAt        DateTime          @default(now()) @map("created_at")
-  updatedAt        DateTime          @updatedAt @map("updated_at")
-  purchases        Purchase[]
-  sales            Sale[]
-  stockAdjustments StockAdjustment[]
+  id                  String            @id @default(uuid()) @db.Uuid
+  name                String
+  email               String            @unique
+  passwordHash        String            @map("password_hash")
+  role                UserRole          @default(STAFF)
+  status              RecordStatus      @default(ACTIVE)
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  purchases           Purchase[]
+  sales               Sale[]
+  stockAdjustments    StockAdjustment[]
+  refreshToken        String?
+  refreshTokenExpires DateTime?
 
   @@index([status])
   @@map("users")

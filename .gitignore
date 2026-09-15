@@ -8,9 +8,10 @@ node_modules/
 skills-lock.json
 dist/
 build/
-
+generated/
 coverage/
 
 *.log
 
 .DS_Store
+test.rest
