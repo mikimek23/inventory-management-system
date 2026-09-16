@@ -14,4 +14,7 @@ coverage/
 *.log
 
 .DS_Store
+
+# test files
 test.rest
+categorytest.rest

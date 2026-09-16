@@ -9,7 +9,10 @@ export const updateUserValidator = z
       .optional(),
     email: z.string().trim().email("Invalid email").toLowerCase().optional(),
   })
-  .strict();
+  .strict()
+  .refine((data) => data.name !== undefined || data.email !== undefined, {
+    message: "At least one field is required to update the category",
+  });
 export const updateUserRoleValidator = z.object({
   role: z.enum(["ADMIN", "STAFF"], "invalid role").optional(),
 });
