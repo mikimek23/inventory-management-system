@@ -57,6 +57,8 @@ model User {
 model Category {
   id          String       @id @default(uuid()) @db.Uuid
   name        String       @unique
+  code        String       @unique
+  skuSequence Int          @default(0)
   description String?
   status      RecordStatus @default(ACTIVE)
   createdAt   DateTime     @default(now()) @map("created_at")

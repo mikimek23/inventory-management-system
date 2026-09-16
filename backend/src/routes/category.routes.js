@@ -19,16 +19,17 @@ categoryRouter.get("/", authMiddleware, getCategoriesController);
 categoryRouter.get("/:id", authMiddleware, getCategoryController);
 categoryRouter.post(
   "/",
-  validate(createCategoryValidator),
   authMiddleware,
   requireRole("ADMIN"),
+  validate(createCategoryValidator),
   createCategoryController,
 );
 categoryRouter.patch(
   "/:id",
-  validate(updateCategoryValidator),
+
   authMiddleware,
   requireRole("ADMIN"),
+  validate(updateCategoryValidator),
   updateCategoryController,
 );
 categoryRouter.post(
@@ -37,4 +38,4 @@ categoryRouter.post(
   requireRole("ADMIN"),
   updateCategoryStatusController,
 );
-export default categoryRouter
+export default categoryRouter;

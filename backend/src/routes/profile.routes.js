@@ -4,5 +4,10 @@ import { updateProfileController } from "../controllers/profile.controller.js";
 import { validate } from "../middleware/validator.middleware.js";
 import { updateUserValidator } from "../validators/userupdate.validator.js";
 const profileRouter = express.Router();
-profileRouter.patch("/",validate(updateUserValidator), authMiddleware, updateProfileController);
+profileRouter.patch(
+  "/",
+  authMiddleware,
+  validate(updateUserValidator),
+  updateProfileController,
+);
 export default profileRouter;

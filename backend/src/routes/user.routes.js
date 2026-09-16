@@ -18,16 +18,16 @@ userRouter.get("/", authMiddleware, requireRole("ADMIN"), getUsersController);
 userRouter.get("/:id", authMiddleware, requireRole("ADMIN"), getUserController);
 userRouter.patch(
   "/:id/role",
-  validate(updateUserRoleValidator),
   authMiddleware,
   requireRole("ADMIN"),
+  validate(updateUserRoleValidator),
   updateUserRoleController,
 );
 userRouter.patch(
   "/:id/status",
-  validate(updateUserStatusValidator),
   authMiddleware,
   requireRole("ADMIN"),
+  validate(updateUserStatusValidator),
   updateUserStatusController,
 );
 export default userRouter;

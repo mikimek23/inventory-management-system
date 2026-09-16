@@ -11,6 +11,9 @@ export const getCategoryByName = async (name) => {
     where: { name: { equals: name, mode: "insensitive" } },
   });
 };
+export const getCategoryByCode = async (code) => {
+  return prisma.category.findUnique({ where: { code } });
+};
 export const createCategory = async (data) => {
   return prisma.category.create({ data });
 };

@@ -1,7 +1,7 @@
 import { z } from "zod";
 export const userRegisterValidator = z.object({
   name: z.string().trim().min(3,'Name must be at least 3 characters long'),
-  email: z.string().trim().email("Invalid email").toLowerCase(),
+  email: z.email("Invalid email").trim().toLowerCase(),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
@@ -11,6 +11,6 @@ export const userRegisterValidator = z.object({
     .regex(/[@$!%*?&]/, "Password must contain special character"),
 });
 export const userLoginvalidator = z.object({
-  email: z.string().trim().email('Invalid email').toLowerCase(),
+  email: z.email('Invalid email').trim().toLowerCase(),
   password: z.string().min(8,"Password must be at least 8 characters long"),
 })
