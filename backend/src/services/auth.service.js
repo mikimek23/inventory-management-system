@@ -1,4 +1,5 @@
 import {
+  clearRefreshToken,
   createUser,
   findUserByEmail,
   findUserById,
@@ -11,12 +12,8 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/token.js";
-const hashData = async (data) => {
-  return bcrypt.hash(data, 10);
-};
-const compareData = async (data, hashedData) => {
-  return bcrypt.compare(data, hashedData);
-};
+import { compareData, hashData } from "../utils/password.js";
+
 export const userRegisterService = async (data) => {
   const existingUser = await findUserByEmail(data.email);
   if (existingUser) {
@@ -145,8 +142,22 @@ export const logOutService = async (refreshToken) => {
     if (!isMatch) {
       throw new AppError("Invalid refresh token", 401);
     }
-    await updateRefreshToken(user.id, null, null);
+    await clearRefreshToken(user.id);
   } catch {
     return;
   }
+};
+export const profileService = async (id) => {
+  const user = await findUserById(id);
+  if (!user) {
+    throw new AppError("user not found", 404);
+  }
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    status: user.status,
+    createdAt: user.createdAt,
+  };
 };

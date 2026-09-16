@@ -2,6 +2,7 @@ import { success } from "zod";
 import { getEnv } from "../config/env.js";
 import {
   logOutService,
+  profileService,
   refreshTokenService,
   userLoginService,
   userRegisterService,
@@ -62,5 +63,15 @@ export const logOutController = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Logged out successfully",
+  });
+});
+export const profileController = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    throw new AppError("Unauthorized", 401);
+  }
+  const response = await profileService(req.user.id);
+  res.status(200).json({
+    success: true,
+    data: response,
   });
 });

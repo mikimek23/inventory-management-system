@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import errorHandler from "./middleware/error.middleware.js";
-import userRouter from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth.routes.js";
+import userRouter from "./routes/user.routes.js";
+import profileRouter from "./routes/profile.routes.js";
 const app = express();
 app.use(
   cors({
@@ -16,6 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/health", (req, res) => {
   res.status(200).json({ success: true, message: "healthy" });
 });
-app.use("/api/auth", userRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
+app.use("/api/profile", profileRouter);
 app.use(errorHandler);
 export default app;

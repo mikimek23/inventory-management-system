@@ -6,17 +6,20 @@ import {
 } from "../validators/auth.validator.js";
 import {
   logOutController,
+  profileController,
   refreshTokenController,
   userLoginController,
   userRegisterController,
 } from "../controllers/auth.controller.js";
-const userRouter = express.Router();
-userRouter.post(
+import { authMiddleware } from "../middleware/auth.middleware.js";
+const authRouter = express.Router();
+authRouter.post(
   "/register",
   validate(userRegisterValidator),
   userRegisterController,
 );
-userRouter.post("/login", validate(userLoginvalidator), userLoginController);
-userRouter.post("/refresh", refreshTokenController);
-userRouter.post("/logout", logOutController);
-export default userRouter;
+authRouter.post("/login", validate(userLoginvalidator), userLoginController);
+authRouter.post("/refresh", refreshTokenController);
+authRouter.post("/logout", logOutController);
+authRouter.get("/me",authMiddleware,profileController)
+export default authRouter;
