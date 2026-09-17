@@ -21,7 +21,7 @@ export const getProductController = asyncHandler(async (req, res) => {
   });
 });
 export const createProductController = asyncHandler(async (req, res) => {
-  const response = await createProductService(req.body);
+  const response = await createProductService(req.user.id, req.body);
   res.status(201).json({
     success: true,
     message: "product created successfully",

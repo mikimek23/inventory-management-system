@@ -13,6 +13,8 @@ export const createProductValidator = z
     sellingPrice: z.number().nonnegative("Selling price cannot be negative"),
 
     minimumStock: z.number().nonnegative("Minimum stock cannot be negative"),
+
+    quantity: z.number().nonnegative("Opening quantity cannot be negative"),
   })
   .strict()
   .refine((data) => data.sellingPrice >= data.costPrice, {

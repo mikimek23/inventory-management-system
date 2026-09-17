@@ -17,8 +17,8 @@ export const getProducts = async (filters = {}) => {
   return prisma.product.findMany({ where, orderBy: { createdAt: "desc" } });
 };
 
-export const getProduct = async (id) => {
-  return prisma.product.findUnique({ where: { id } });
+export const getProduct = async (id, db = prisma) => {
+  return db.product.findUnique({ where: { id } });
 };
 export const getProductBySku = async (sku) => {
   return prisma.product.findUnique({ where: { sku } });

@@ -8,6 +8,7 @@ import {
   incrementCategorySkuSequence,
   updateProduct,
 } from "../repositories/product.repositories.js";
+import { createStockAdjustment } from "../repositories/stock.repositories.js";
 import AppError from "../utils/AppError.js";
 
 export const getProductsService = async (filters) => {
@@ -21,7 +22,7 @@ export const getProductService = async (id) => {
   }
   return product;
 };
-export const createProductService = async (data) => {
+export const createProductService = async (createdById, data) => {
   return prisma.$transaction(async (tx) => {
     const category = await getCategoryById(data.categoryId);
     if (!category) {
@@ -47,6 +48,15 @@ export const createProductService = async (data) => {
       sellingPrice: data.sellingPrice,
       minimumStock: data.minimumStock,
     });
+    if (data.quantity > 0) {
+      await createStockAdjustment(tx, {
+        productId: product.id,
+        createdById,
+        type: "INCREASE",
+        quantity: data.quantity,
+        reason: "Opening stock",
+      });
+    }
     return product;
   });
 };
