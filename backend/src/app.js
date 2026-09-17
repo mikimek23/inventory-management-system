@@ -9,6 +9,7 @@ import categoryRouter from "./routes/category.routes.js";
 import productRouter from "./routes/product.routes.js";
 import customerRouter from "./routes/customer.routes.js";
 import supplierRouter from "./routes/supplier.routes.js";
+import purchaseRouter from "./routes/purchaseRoutes.js";
 const app = express();
 app.use(
   cors({
@@ -29,5 +30,6 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
 app.use("/api/customers", customerRouter);
 app.use("/api/suppliers", supplierRouter);
+app.use("/api/purchases",purchaseRouter)
 app.use(errorHandler);
 export default app;

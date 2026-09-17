@@ -156,6 +156,7 @@ model PurchaseItem {
   purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
   product    Product  @relation(fields: [productId], references: [id])
 
+  @@unique([purchaseId, productId])
   @@index([purchaseId])
   @@index([productId])
   @@map("purchase_items")
