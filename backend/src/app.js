@@ -7,6 +7,8 @@ import userRouter from "./routes/user.routes.js";
 import profileRouter from "./routes/profile.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import productRouter from "./routes/product.routes.js";
+import customerRouter from "./routes/customer.routes.js";
+import supplierRouter from "./routes/supplier.routes.js";
 const app = express();
 app.use(
   cors({
@@ -25,5 +27,7 @@ app.use("/api/users", userRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/products", productRouter);
+app.use("/api/customers", customerRouter);
+app.use("/api/suppliers", supplierRouter);
 app.use(errorHandler);
 export default app;

@@ -94,7 +94,7 @@ model Product {
 model Supplier {
   id        String       @id @default(uuid()) @db.Uuid
   name      String
-  phone     String?
+  phone     String
   email     String?
   address   String?
   notes     String?
@@ -110,7 +110,7 @@ model Supplier {
 model Customer {
   id        String       @id @default(uuid()) @db.Uuid
   name      String
-  phone     String?
+  phone     String
   email     String?
   address   String?
   notes     String?
