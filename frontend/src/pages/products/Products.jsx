@@ -31,7 +31,7 @@ export const Products = () => {
   const [statusConfirmProduct, setStatusConfirmProduct] = useState(null);
 
   // Queries
-  const { data: products = [], isLoading, refetch } = useProducts({
+  const { data: products = [], isLoading } = useProducts({
     search: search || undefined,
     categoryId: categoryFilter || undefined,
     status: statusFilter || undefined,

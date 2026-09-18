@@ -9,7 +9,6 @@ import categoryApi from "../../services/category.api";
 import formatCurrency from "../../utils/formatCurrency";
 import Spinner from "../../components/ui/Spinner";
 import ErrorState from "../../components/ui/ErrorState";
-import Button from "../../components/ui/Button";
 import {
   AreaTrendChart,
   BarComparisonChart,
@@ -59,31 +58,34 @@ export const Analysis = () => {
     salesQuery.isError ||
     categoriesQuery.isError;
 
-  const products = productsQuery.data || [];
-  const stockItems = stockQuery.data || [];
-  const purchases = purchasesQuery.data || [];
-  const sales = salesQuery.data || [];
-  const categories = categoriesQuery.data || [];
+  const products = useMemo(() => productsQuery.data || [], [productsQuery.data]);
+  const stockItems = useMemo(() => stockQuery.data || [], [stockQuery.data]);
+  const purchases = useMemo(() => purchasesQuery.data || [], [purchasesQuery.data]);
+  const sales = useMemo(() => salesQuery.data || [], [salesQuery.data]);
+  const categories = useMemo(() => categoriesQuery.data || [], [categoriesQuery.data]);
 
   // Filter transactions by timeRange
-  const filterByTime = (dateStr) => {
-    if (timeRange === "ALL") return true;
-    const date = new Date(dateStr);
-    const now = new Date();
-    if (timeRange === "30D") {
-      const past30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      return date >= past30;
-    }
-    if (timeRange === "6M") {
-      const past6M = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
-      return date >= past6M;
-    }
-    return true;
-  };
+  const filterByTime = React.useCallback(
+    (dateStr) => {
+      if (timeRange === "ALL") return true;
+      const date = new Date(dateStr);
+      const now = new Date();
+      if (timeRange === "30D") {
+        const past30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        return date >= past30;
+      }
+      if (timeRange === "6M") {
+        const past6M = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+        return date >= past6M;
+      }
+      return true;
+    },
+    [timeRange]
+  );
 
   const filteredSales = useMemo(
     () => sales.filter((s) => filterByTime(s.transactionDate || s.createdAt)),
-    [sales, timeRange]
+    [sales, filterByTime]
   );
 
   const filteredPurchases = useMemo(
@@ -91,7 +93,7 @@ export const Analysis = () => {
       purchases.filter((p) =>
         filterByTime(p.transactionDate || p.createdAt)
       ),
-    [purchases, timeRange]
+    [purchases, filterByTime]
   );
 
   // Financial aggregates

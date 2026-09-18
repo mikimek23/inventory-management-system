@@ -2,10 +2,6 @@ node_modules/
 .env
 .env.*
 !.env.example
-.agents/
-.claude/
-.windsurf
-skills-lock.json
 dist/
 build/
 generated/
@@ -14,11 +10,3 @@ coverage/
 *.log
 
 .DS_Store
-
-# test files
-test.rest
-categorytest.rest
-producttest.rest
-customertest.rest
-suppliertest.rest
-purchasetest.rest

@@ -49,10 +49,10 @@ export const Dashboard = () => {
     purchasesQuery.isError ||
     salesQuery.isError;
 
-  const products = productsQuery.data || [];
-  const stockItems = stockQuery.data || [];
-  const purchases = purchasesQuery.data || [];
-  const sales = salesQuery.data || [];
+  const products = useMemo(() => productsQuery.data || [], [productsQuery.data]);
+  const stockItems = useMemo(() => stockQuery.data || [], [stockQuery.data]);
+  const purchases = useMemo(() => purchasesQuery.data || [], [purchasesQuery.data]);
+  const sales = useMemo(() => salesQuery.data || [], [salesQuery.data]);
 
   const totalProducts = products.length;
   const totalStockQty = stockItems.reduce(

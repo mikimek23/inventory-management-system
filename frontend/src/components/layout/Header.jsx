@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import Badge from "../ui/Badge";
-import formatDate from "../../utils/formatDate";
 
 export const Header = ({ onOpenMobileNav, title }) => {
   const { user } = useAuth();

@@ -17,5 +17,17 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // Allow standard unused vars prefixed with _ and handle React 17+ JSX transform
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^(React|_)',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])

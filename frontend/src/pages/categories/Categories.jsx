@@ -53,7 +53,7 @@ export const Categories = () => {
 
   const toggleStatusMutation = useMutation({
     mutationFn: (id) => categoryApi.toggleStatus(id),
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       success("Category status updated!");
       setStatusConfirmCategory(null);
