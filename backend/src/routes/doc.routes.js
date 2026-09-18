@@ -103,7 +103,7 @@ docRouter.get("/", (req, res) => {
     </a>
     <div class="topbar-links">
       <a href="/api/doc/swagger.json" target="_blank">Raw JSON Spec</a>
-      <a href="http://localhost:5173" target="_blank">Frontend App →</a>
+      <a href="https://inventory-management-system-rose-seven.vercel.app" target="_blank">Live Demo ↗</a>
     </div>
   </div>
 

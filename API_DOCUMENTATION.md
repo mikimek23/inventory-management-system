@@ -6,16 +6,18 @@ Comprehensive REST API documentation for the Inventory Management System backend
 
 ## 1. Overview & Interactive Swagger Documentation
 
-- **Base URL**: `http://localhost:5000/api`
-- **Interactive Swagger UI**: [**`http://localhost:5000/api/doc`**](http://localhost:5000/api/doc)
-- **OpenAPI 3.0 Raw Spec**: [**`http://localhost:5000/api/doc/swagger.json`**](http://localhost:5000/api/doc/swagger.json)
-- **Default Port**: `5000`
+### Live Deployments
+- **Live Web App (Frontend)**: [**https://inventory-management-system-rose-seven.vercel.app**](https://inventory-management-system-rose-seven.vercel.app)
+- **Backend API Base URL**: `https://inventory-management-system-w3pz.onrender.com/api`
+- **Interactive Swagger UI (Live)**: [**https://inventory-management-system-w3pz.onrender.com/api/doc**](https://inventory-management-system-w3pz.onrender.com/api/doc)
+- **OpenAPI 3.0 Raw JSON (Live)**: [**https://inventory-management-system-w3pz.onrender.com/api/doc/swagger.json**](https://inventory-management-system-w3pz.onrender.com/api/doc/swagger.json)
+- **Local Development Base URL**: `http://localhost:5000/api`
 - **Content-Type**: `application/json`
 - **Database**: PostgreSQL with Prisma ORM
 - **Session Auth**: JWT Access Token (Header) + HTTP-Only Refresh Token (Cookie)
 
 ### Interactive Swagger UI Console
-Navigate to `http://localhost:5000/api/doc` in any browser to access the live Swagger UI console:
+Navigate to [**https://inventory-management-system-w3pz.onrender.com/api/doc**](https://inventory-management-system-w3pz.onrender.com/api/doc) (or `http://localhost:5000/api/doc` locally) in any browser to access the live Swagger UI console:
 1. Click **Authorize** (top right) and paste your Bearer token.
 2. Click **Try it out** on any endpoint to send live requests directly from your browser.
 3. Inspect request schemas, sample responses, and query parameters interactively.

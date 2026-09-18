@@ -4,13 +4,17 @@ export const swaggerSpec = {
     title: "StockFlow Inventory Management API",
     version: "1.0.0",
     description:
-      "Enterprise REST API for inventory tracking, procurement purchases, sales order management, stock adjustments, and role-based access control.",
+      "Enterprise REST API for inventory tracking, procurement purchases, sales order management, stock adjustments, and role-based access control.\n\n• **Live Web App**: https://inventory-management-system-rose-seven.vercel.app\n• **Production Backend**: https://inventory-management-system-w3pz.onrender.com",
     contact: {
       name: "StockFlow API Support",
       email: "support@stockflow.local",
     },
   },
   servers: [
+    {
+      url: "https://inventory-management-system-w3pz.onrender.com/api",
+      description: "Production Cloud Server (Render)",
+    },
     {
       url: "/api",
       description: "Current Backend Server",

@@ -2,6 +2,15 @@
 
 A production-ready, full-stack web application for small and medium retail/wholesale businesses to manage catalog products, stock levels, suppliers, customers, purchases, sales, and executive financial analytics in real time.
 
+### 🌐 Live Deployment Links
+
+| Service | Link / URL | Status |
+| :--- | :--- | :--- |
+| **Live Web App (Frontend)** | [https://inventory-management-system-rose-seven.vercel.app](https://inventory-management-system-rose-seven.vercel.app) | Production (Vercel) |
+| **Backend API Base URL** | `https://inventory-management-system-w3pz.onrender.com/api` | Production (Render) |
+| **Interactive Swagger Docs** | [https://inventory-management-system-w3pz.onrender.com/api/doc](https://inventory-management-system-w3pz.onrender.com/api/doc) | Live Swagger Console |
+| **API Health Check** | [https://inventory-management-system-w3pz.onrender.com/api/health](https://inventory-management-system-w3pz.onrender.com/api/health) | System Health |
+
 ---
 
 ## 1. Project Overview & Key Features
@@ -207,9 +216,12 @@ The database seeder provisions two default accounts for testing:
 
 ### Interactive Swagger UI
 
-Open the live Swagger documentation directly in your browser:
+Access the interactive Swagger UI console in your browser:
 
-- **URL**: `http://localhost:5000/api/doc`
+- **Production Cloud Documentation**: [https://inventory-management-system-w3pz.onrender.com/api/doc](https://inventory-management-system-w3pz.onrender.com/api/doc)
+- **Production Backend Base URL**: `https://inventory-management-system-w3pz.onrender.com/api`
+- **Live Frontend Web App**: [https://inventory-management-system-rose-seven.vercel.app](https://inventory-management-system-rose-seven.vercel.app)
+- **Local Development URL**: `http://localhost:5000/api/doc`
 
 ### Endpoint Overview
 
@@ -254,6 +266,21 @@ Open the live Swagger documentation directly in your browser:
 ---
 
 ## 9. Testing & Quality Verification
+
+### Automated Backend Integration Tests
+
+Run the automated integration test suite to verify core transactional business rules, inventory ledger updates, and authorization boundaries:
+
+```bash
+cd backend
+npm test
+```
+
+The test suite verifies:
+1. **Negative Stock Prevention (Rule 1)**: Rejection of sales when available stock is insufficient (`HTTP 409 Conflict`).
+2. **Purchase Stock-In (Rule 2)**: Accurate increment of available product inventory upon purchase order completion.
+3. **Sale Stock-Out (Rule 3)**: Accurate decrement of product inventory upon customer sale completion.
+4. **Role-Based Authorization (Rule 4)**: Strict enforcement ensuring Staff users cannot execute Admin-restricted actions (`HTTP 403 Forbidden`).
 
 ### Frontend Build & Type Validation
 
