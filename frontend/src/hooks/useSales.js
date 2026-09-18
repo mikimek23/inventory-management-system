@@ -26,6 +26,14 @@ export const useSaleMutations = () => {
     },
   });
 
+  const updateSale = useMutation({
+    mutationFn: ({ id, data }) => saleApi.update(id, data),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["sale", id] });
+    },
+  });
+
   const completeSale = useMutation({
     mutationFn: (id) => saleApi.complete(id),
     onSuccess: (_, id) => {
@@ -46,6 +54,7 @@ export const useSaleMutations = () => {
 
   return {
     createSale,
+    updateSale,
     completeSale,
     cancelSale,
   };

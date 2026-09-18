@@ -74,6 +74,11 @@ export const PurchaseDetails = () => {
           </Link>
           {isDraft && (
             <>
+              <Link to={`/purchases/${purchase.id}/edit`}>
+                <Button variant="outline" size="sm">
+                  ✎ Edit Draft
+                </Button>
+              </Link>
               <Button
                 variant="secondary"
                 size="sm"

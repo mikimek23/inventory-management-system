@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import productApi from "../../services/product.api";
@@ -11,6 +12,7 @@ import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import ErrorState from "../../components/ui/ErrorState";
 import useAuth from "../../hooks/useAuth";
+import { AreaTrendChart, StockHealthBar } from "../../components/charts/Charts";
 
 export const Dashboard = () => {
   const { user } = useAuth();
@@ -47,12 +49,140 @@ export const Dashboard = () => {
     purchasesQuery.isError ||
     salesQuery.isError;
 
+  const products = productsQuery.data || [];
+  const stockItems = stockQuery.data || [];
+  const purchases = purchasesQuery.data || [];
+  const sales = salesQuery.data || [];
+
+  const totalProducts = products.length;
+  const totalStockQty = stockItems.reduce(
+    (sum, item) => sum + Number(item.currentStock || 0),
+    0
+  );
+
+  const lowStockItems = useMemo(
+    () =>
+      stockItems.filter(
+        (item) => Number(item.currentStock || 0) <= Number(item.minimumStock || 0)
+      ),
+    [stockItems]
+  );
+
+  const completedPurchases = useMemo(
+    () => purchases.filter((p) => p.status === "COMPLETED"),
+    [purchases]
+  );
+  const completedSales = useMemo(
+    () => sales.filter((s) => s.status === "COMPLETED"),
+    [sales]
+  );
+
+  const totalPurchasesAmount = completedPurchases.reduce(
+    (sum, p) => sum + Number(p.total || 0),
+    0
+  );
+  const totalSalesAmount = completedSales.reduce(
+    (sum, s) => sum + Number(s.total || 0),
+    0
+  );
+
+  // Stock health counts
+  const stockHealth = useMemo(() => {
+    let healthy = 0;
+    let low = 0;
+    let outOfStock = 0;
+
+    stockItems.forEach((item) => {
+      const stock = Number(item.currentStock || 0);
+      const min = Number(item.minimumStock || 0);
+      if (stock <= 0) {
+        outOfStock++;
+      } else if (stock <= min) {
+        low++;
+      } else {
+        healthy++;
+      }
+    });
+
+    return { healthy, low, outOfStock };
+  }, [stockItems]);
+
+  // 6-Month Trend Data for Mini Chart
+  const trendData = useMemo(() => {
+    const monthMap = {};
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      const label = `${monthNames[d.getMonth()]}`;
+      monthMap[key] = { label, sales: 0, purchases: 0, order: d.getTime() };
+    }
+
+    completedSales.forEach((s) => {
+      const d = new Date(s.transactionDate || s.createdAt);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (monthMap[key]) {
+        monthMap[key].sales += Number(s.total || 0);
+      }
+    });
+
+    completedPurchases.forEach((p) => {
+      const d = new Date(p.transactionDate || p.createdAt);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (monthMap[key]) {
+        monthMap[key].purchases += Number(p.total || 0);
+      }
+    });
+
+    return Object.values(monthMap)
+      .sort((a, b) => a.order - b.order)
+      .map((item) => ({
+        label: item.label,
+        sales: Math.round(item.sales),
+        purchases: Math.round(item.purchases),
+        margin: Math.round(item.sales - item.purchases),
+      }));
+  }, [completedSales, completedPurchases]);
+
+  // Combine recent activity
+  const recentActivities = useMemo(() => {
+    return [
+      ...purchases.map((p) => ({
+        id: p.id,
+        type: "PURCHASE",
+        ref: p.referenceNumber,
+        party: p.supplier?.name || "Supplier",
+        date: p.transactionDate || p.createdAt,
+        amount: p.total,
+        status: p.status,
+        link: `/purchases/${p.id}`,
+      })),
+      ...sales.map((s) => ({
+        id: s.id,
+        type: "SALE",
+        ref: s.referenceNumber,
+        party: s.customer?.name || "Walk-in Customer",
+        date: s.transactionDate || s.createdAt,
+        amount: s.total,
+        status: s.status,
+        link: `/sales/${s.id}`,
+      })),
+    ]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 6);
+  }, [purchases, sales]);
+
   if (isLoading) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center">
+      <div className="py-24 flex flex-col items-center justify-center space-y-3">
         <Spinner size="lg" />
-        <p className="text-sm text-slate-500 mt-3 font-medium">
-          Loading dashboard metrics...
+        <p className="text-sm text-slate-500 font-medium">
+          Loading workspace metrics...
         </p>
       </div>
     );
@@ -73,72 +203,28 @@ export const Dashboard = () => {
     );
   }
 
-  const products = productsQuery.data || [];
-  const stockItems = stockQuery.data || [];
-  const purchases = purchasesQuery.data || [];
-  const sales = salesQuery.data || [];
-
-  const totalProducts = products.length;
-  const totalStockQty = stockItems.reduce(
-    (sum, item) => sum + Number(item.currentStock || 0),
-    0,
-  );
-
-  const lowStockItems = stockItems.filter(
-    (item) => Number(item.currentStock || 0) <= Number(item.minimumStock || 0),
-  );
-
-  const totalPurchasesAmount = purchases
-    .filter((p) => p.status === "COMPLETED")
-    .reduce((sum, p) => sum + Number(p.total || 0), 0);
-
-  const totalSalesAmount = sales
-    .filter((s) => s.status === "COMPLETED")
-    .reduce((sum, s) => sum + Number(s.total || 0), 0);
-
-  // Combine recent activity
-  const recentActivities = [
-    ...purchases.map((p) => ({
-      id: p.id,
-      type: "PURCHASE",
-      ref: p.referenceNumber,
-      party: p.supplier?.name || "Supplier",
-      date: p.transactionDate || p.createdAt,
-      amount: p.total,
-      status: p.status,
-      link: `/purchases/${p.id}`,
-    })),
-    ...sales.map((s) => ({
-      id: s.id,
-      type: "SALE",
-      ref: s.referenceNumber,
-      party: s.customer?.name || "Walk-in Customer",
-      date: s.transactionDate || s.createdAt,
-      amount: s.total,
-      status: s.status,
-      link: `/sales/${s.id}`,
-    })),
-  ]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 6);
-
   return (
-    <div className="space-y-6 animate-in fade-in duration-150">
-      {/* Welcome Banner */}
+    <div className="space-y-6">
+      {/* Welcome & Navigation Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs">
         <div>
-          <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+          <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">
             WORKSPACE OVERVIEW
           </span>
-          <h2 className="text-2xl font-black text-slate-900 mt-0.5">
-            Welcome back, {user?.name}
+          <h2 className="text-2xl font-black text-slate-900 mt-0.5 tracking-tight">
+            Welcome back, {user?.name || "Admin"}
           </h2>
           <p className="text-sm text-slate-500 mt-1">
-            Here is your daily snapshot of inventory quantities and transaction
-            volumes.
+            Real-time snapshot of inventory levels, transaction activity, and performance trends.
           </p>
         </div>
-        <div className="flex items-center gap-2.5">
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link to="/analysis">
+            <Button variant="secondary" size="md">
+              📊 View Analytics
+            </Button>
+          </Link>
           <Link to="/sales/new">
             <Button variant="primary" size="md">
               + New Sale
@@ -152,92 +238,159 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* Primary KPI Cards (Reference Image Aesthetic) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
         {/* Total Products */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-            Total Products
-          </span>
-          <span className="text-3xl font-black text-slate-800">
-            {totalProducts}
-          </span>
-          <p className="text-[11px] text-slate-400 mt-2">Active in catalogue</p>
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1 min-w-0 flex flex-col justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block truncate">
+              Catalog Products
+            </span>
+            <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1 truncate">
+              {totalProducts}
+            </p>
+          </div>
+          <p className="text-[11px] text-slate-400 truncate">Total cataloged items</p>
         </div>
 
         {/* Stock on Hand */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-            Stock On Hand
-          </span>
-          <span className="text-3xl font-black text-emerald-700">
-            {totalStockQty}
-          </span>
-          <p className="text-[11px] text-slate-400 mt-2">
-            Total inventory units
-          </p>
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1 min-w-0 flex flex-col justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block truncate">
+              Stock On Hand
+            </span>
+            <p className="text-2xl sm:text-3xl font-black text-blue-900 tracking-tight mt-1 truncate">
+              {totalStockQty}
+            </p>
+          </div>
+          <p className="text-[11px] text-slate-400 truncate">Total inventory units</p>
         </div>
 
         {/* Low Stock Items */}
         <div
-          className={`p-5 rounded-xl border shadow-2xs ${
+          className={`p-5 rounded-2xl border shadow-2xs space-y-1 min-w-0 flex flex-col justify-between ${
             lowStockItems.length > 0
-              ? "bg-amber-50/60 border-amber-200"
+              ? "bg-amber-50/40 border-amber-200"
               : "bg-white border-slate-200"
           }`}
         >
-          <span className="text-xs font-bold text-amber-700 uppercase tracking-wider block mb-1">
-            Low Stock Alerts
-          </span>
-          <span className="text-3xl font-black text-amber-600">
-            {lowStockItems.length}
-          </span>
-          <p className="text-[11px] text-amber-700/80 mt-2">
-            {lowStockItems.length > 0
-              ? "Requires restock"
-              : "All stocks healthy"}
+          <div>
+            <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider block truncate">
+              Low Stock Alerts
+            </span>
+            <p className="text-2xl sm:text-3xl font-black text-amber-600 tracking-tight mt-1 truncate">
+              {lowStockItems.length}
+            </p>
+          </div>
+          <p className="text-[11px] text-amber-700/80 truncate">
+            {lowStockItems.length > 0 ? "Requires restock" : "All stocks healthy"}
           </p>
         </div>
 
-        {/* Purchases Volume */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-            Total Purchases
-          </span>
-          <span className="text-2xl font-black text-slate-800">
-            {formatCurrency(totalPurchasesAmount)}
-          </span>
-          <p className="text-[11px] text-slate-400 mt-2">Completed spend</p>
+        {/* Completed Purchases */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1 min-w-0 flex flex-col justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block truncate">
+              Total Purchases
+            </span>
+            <p
+              className="text-lg sm:text-xl xl:text-2xl font-black text-slate-900 font-mono tracking-tight mt-1 truncate"
+              title={formatCurrency(totalPurchasesAmount)}
+            >
+              {formatCurrency(totalPurchasesAmount)}
+            </p>
+          </div>
+          <p className="text-[11px] text-slate-400 truncate">Completed procurement</p>
         </div>
 
-        {/* Sales Volume */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-            Total Sales
-          </span>
-          <span className="text-2xl font-black text-emerald-800">
-            {formatCurrency(totalSalesAmount)}
-          </span>
-          <p className="text-[11px] text-slate-400 mt-2">Completed revenue</p>
+        {/* Completed Sales */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1 min-w-0 sm:col-span-2 md:col-span-1 xl:col-span-1 flex flex-col justify-between">
+          <div>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block truncate">
+              Total Sales
+            </span>
+            <p
+              className="text-lg sm:text-xl xl:text-2xl font-black text-blue-900 font-mono tracking-tight mt-1 truncate"
+              title={formatCurrency(totalSalesAmount)}
+            >
+              {formatCurrency(totalSalesAmount)}
+            </p>
+          </div>
+          <p className="text-[11px] text-slate-400 truncate">Completed gross revenue</p>
         </div>
       </div>
 
-      {/* Two Column Section */}
+      {/* Trend Preview & Stock Health Split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Low Stock Warning Box */}
-        <div className="lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-2xs p-5 flex flex-col">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+        {/* Sales & Purchases Trend Preview */}
+        <div className="lg:col-span-8 bg-white p-6 sm:p-7 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <div>
-              <h3 className="text-base font-bold text-slate-800">
-                Low-Stock Products
+              <h3 className="text-base font-bold text-slate-900">
+                Monthly Transaction Trajectory
               </h3>
-              <p className="text-xs text-slate-500">
-                Items falling at or beneath minimum threshold
+              <p className="text-xs text-slate-500 mt-0.5">
+                Sales revenue vs procurement spend over the last 6 months.
               </p>
             </div>
             <Link
-              to="/stock?lowStock=true"
-              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline"
+              to="/analysis"
+              className="text-xs font-bold text-blue-700 hover:text-blue-800 hover:underline"
+            >
+              Full Analysis →
+            </Link>
+          </div>
+
+          <AreaTrendChart data={trendData} height={200} showPurchases={true} />
+        </div>
+
+        {/* Inventory Stock Health Gauge */}
+        <div className="lg:col-span-4 bg-white p-6 sm:p-7 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between space-y-4">
+          <div>
+            <div className="pb-2 border-b border-slate-100">
+              <h3 className="text-base font-bold text-slate-900">
+                Stock Health
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Current inventory thresholds
+              </p>
+            </div>
+
+            <div className="mt-4">
+              <StockHealthBar
+                healthy={stockHealth.healthy}
+                low={stockHealth.low}
+                outOfStock={stockHealth.outOfStock}
+              />
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-slate-100">
+            <Link to="/stock">
+              <Button variant="outline" size="sm" fullWidth>
+                Review All Stock Levels →
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Two Column Section: Low Stock & Recent Transactions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Low Stock Warning Box */}
+        <div className="lg:col-span-6 bg-white rounded-2xl border border-slate-200 shadow-2xs p-6 flex flex-col">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+              <h3 className="text-base font-bold text-slate-900">
+                Low-Stock Products
+              </h3>
+              <p className="text-xs text-slate-500">
+                Products requiring replenishment
+              </p>
+            </div>
+            <Link
+              to="/stock"
+              className="text-xs font-bold text-blue-700 hover:text-blue-800 hover:underline"
             >
               View all stock →
             </Link>
@@ -245,8 +398,8 @@ export const Dashboard = () => {
 
           <div className="flex-1 overflow-x-auto">
             {lowStockItems.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-sm">
-                🎉 No products currently below minimum stock level.
+              <div className="text-center py-10 text-slate-400 text-sm">
+                🎉 All products are currently above minimum stock levels!
               </div>
             ) : (
               <table className="w-full text-left border-collapse">
@@ -255,7 +408,7 @@ export const Dashboard = () => {
                     <th className="pb-2">Product</th>
                     <th className="pb-2">Current</th>
                     <th className="pb-2">Minimum</th>
-                    <th className="pb-2 text-right">Status</th>
+                    <th className="pb-2 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
@@ -274,14 +427,12 @@ export const Dashboard = () => {
                         {item.minimumStock}
                       </td>
                       <td className="py-2.5 text-right">
-                        <Badge
-                          value={
-                            Number(item.currentStock) <= 0
-                              ? "OUT OF STOCK"
-                              : "LOW STOCK"
-                          }
-                          size="sm"
-                        />
+                        <Link
+                          to="/purchases/new"
+                          className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-xs font-semibold transition-colors inline-block"
+                        >
+                          + Restock
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -292,24 +443,24 @@ export const Dashboard = () => {
         </div>
 
         {/* Recent Transactions Activity */}
-        <div className="lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-2xs p-5 flex flex-col">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+        <div className="lg:col-span-6 bg-white rounded-2xl border border-slate-200 shadow-2xs p-6 flex flex-col">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
             <div>
-              <h3 className="text-base font-bold text-slate-800">
+              <h3 className="text-base font-bold text-slate-900">
                 Recent Transactions
               </h3>
               <p className="text-xs text-slate-500">
-                Latest purchases and sales movements
+                Latest procurement and sales activities
               </p>
             </div>
             <span className="text-xs text-slate-400 font-semibold">
-              Ledger feed
+              Live Feed
             </span>
           </div>
 
           <div className="flex-1 overflow-x-auto">
             {recentActivities.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-sm">
+              <div className="text-center py-10 text-slate-400 text-sm">
                 No recent transactions recorded.
               </div>
             ) : (
@@ -318,31 +469,31 @@ export const Dashboard = () => {
                   <Link
                     key={`${act.type}-${act.id}`}
                     to={act.link}
-                    className="py-3 flex items-center justify-between hover:bg-slate-50 px-2 rounded-lg transition-colors group"
+                    className="py-3 flex items-center justify-between hover:bg-slate-50 px-2 rounded-xl transition-colors group cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <span
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black shrink-0 ${
+                        className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
                           act.type === "PURCHASE"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-emerald-100 text-emerald-700"
+                            ? "bg-slate-100 text-slate-700"
+                            : "bg-blue-50 text-blue-700"
                         }`}
                       >
                         {act.type === "PURCHASE" ? "IN" : "OUT"}
                       </span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-700 font-mono">
+                          <span className="text-xs font-bold text-slate-800 group-hover:text-blue-700 font-mono transition-colors">
                             {act.ref}
                           </span>
                           <Badge value={act.status} size="sm" />
                         </div>
-                        <p className="text-xs text-slate-500 mt-0.5 truncate max-w-50">
+                        <p className="text-xs text-slate-500 mt-0.5 truncate max-w-48">
                           {act.party} • {formatDate(act.date)}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right font-bold text-sm text-slate-800">
+                    <div className="text-right font-bold text-sm text-slate-900 font-mono">
                       {formatCurrency(act.amount)}
                     </div>
                   </Link>

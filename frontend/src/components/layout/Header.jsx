@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import Badge from "../ui/Badge";
 import formatDate from "../../utils/formatDate";
@@ -32,20 +33,29 @@ export const Header = ({ onOpenMobileNav, title }) => {
             <h2 className="text-base font-bold text-slate-800">{title}</h2>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span className="w-2 h-2 rounded-full bg-blue-600"></span>
               <span className="text-xs font-semibold text-slate-500">{dateFormatted}</span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-4">
+      <Link
+        to="/profile"
+        className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer"
+        title="View Profile"
+      >
         <div className="text-right hidden sm:block">
-          <p className="text-xs font-semibold text-slate-900 leading-none">{user?.name}</p>
+          <p className="text-xs font-bold text-slate-900 leading-none group-hover:text-blue-700 transition-colors">
+            {user?.name}
+          </p>
           <p className="text-[11px] text-slate-400 mt-0.5">{user?.email}</p>
         </div>
         <Badge value={user?.role} />
-      </div>
+        <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center group-hover:bg-blue-200 transition-colors shrink-0">
+          {user?.name ? user.name[0].toUpperCase() : "U"}
+        </div>
+      </Link>
     </header>
   );
 };

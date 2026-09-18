@@ -12,6 +12,7 @@ import supplierRouter from "./routes/supplier.routes.js";
 import purchaseRouter from "./routes/purchaseRoutes.js";
 import saleRouter from "./routes/sale.routes.js";
 import stockRouter, { stockAdjustmentRouter } from "./routes/stock.routes.js";
+import docRouter from "./routes/doc.routes.js";
 
 const app = express();
 
@@ -39,6 +40,8 @@ app.use("/api/purchases", purchaseRouter);
 app.use("/api/sales", saleRouter);
 app.use("/api/stock", stockRouter);
 app.use("/api/stock-adjustments", stockAdjustmentRouter);
+app.use("/api/doc", docRouter);
+app.use("/api/docs", (req, res) => res.redirect("/api/doc"));
 app.use(errorHandler);
 
 export default app;

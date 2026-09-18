@@ -41,8 +41,7 @@ p {
 }
 
 h1 {
-    font-size: clamp(28px, 4vw, 42px);
-    letter-spacing: -1.5px
+    font-size: inherit;
 }
 
 h2 {
@@ -68,17 +67,17 @@ h3 {
 }
 
 .primary {
-    background: #176b55;
+    background: #1d4ed8;
     color: white
 }
 
 .primary:hover {
-    background: #105544
+    background: #1e40af
 }
 
 .ghost {
-    background: #edf1f5;
-    color: #344054
+    background: #f1f5f9;
+    color: #334155
 }
 
 .danger {
@@ -120,8 +119,8 @@ textarea {
     width: 30px;
     height: 30px;
     border-radius: 9px;
-    background: #d6f3e9;
-    color: #09684d;
+    background: #dbeafe;
+    color: #1d4ed8;
     font-size: 12px
 }
 
@@ -134,8 +133,8 @@ textarea {
 
 .login-intro {
     padding: clamp(35px, 8vw, 110px);
-    background: #133f37;
-    color: #e9f8f4;
+    background: #0f172a;
+    color: #f8fafc;
     display: grid;
     align-content: center;
     gap: 18px
@@ -348,7 +347,7 @@ main>header {
 
 .card-head a {
     font-size: 12px;
-    color: #176b55;
+    color: #1d4ed8;
     font-weight: 800
 }
 
@@ -389,7 +388,7 @@ main>header {
 .link {
     border: 0;
     background: none;
-    color: #176b55;
+    color: #1d4ed8;
     font-weight: 800;
     padding: 3px
 }
@@ -412,8 +411,8 @@ main>header {
 .badge.completed,
 .badge.increase,
 .badge.healthy {
-    background: #e4f6ed;
-    color: #10724d
+    background: #eff6ff;
+    color: #1d4ed8
 }
 
 .badge.inactive,

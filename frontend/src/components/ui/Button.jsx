@@ -23,17 +23,17 @@ export const Button = ({
 
   const variantClasses = {
     primary:
-      "bg-emerald-700 text-white hover:bg-emerald-800 focus:ring-emerald-600 shadow-sm",
+      "bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-600 shadow-sm",
     secondary:
       "bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-slate-400 border border-slate-200",
     outline:
-      "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-emerald-500",
+      "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-blue-500",
     danger:
       "bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-sm",
     ghost:
       "text-slate-600 hover:bg-slate-100 focus:ring-slate-400",
     link:
-      "text-emerald-700 hover:underline p-0 h-auto font-semibold focus:ring-0",
+      "text-blue-700 hover:text-blue-800 hover:underline p-0 h-auto font-semibold focus:ring-0",
   }[variant] || "";
 
   const widthClass = fullWidth ? "w-full" : "";

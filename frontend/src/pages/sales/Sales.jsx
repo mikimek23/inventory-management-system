@@ -93,10 +93,18 @@ export const Sales = () => {
       header: "Action",
       className: "text-right",
       render: (row) => (
-        <div className="flex items-center justify-end" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+          {row.status === "DRAFT" && (
+            <Link
+              to={`/sales/${row.id}/edit`}
+              className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-xs font-semibold transition-colors"
+            >
+              Edit
+            </Link>
+          )}
           <Link
             to={`/sales/${row.id}`}
-            className="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 rounded-md text-xs font-semibold transition-colors"
+            className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-semibold transition-colors"
           >
             View Details →
           </Link>

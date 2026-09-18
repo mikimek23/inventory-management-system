@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
 import useAuth from "../../hooks/useAuth";
 import Input from "../../components/ui/Input";
@@ -64,23 +64,23 @@ export const Login = () => {
       {/* Brand Hero Side */}
       <div className="lg:col-span-6 xl:col-span-7 bg-slate-900 text-white p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden">
         {/* Glow decoration */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 font-black text-lg flex items-center justify-center shadow-md">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white font-black text-lg flex items-center justify-center shadow-md">
             IM
           </div>
           <div>
             <h1 className="text-xl font-black tracking-tight text-white">StockFlow</h1>
-            <p className="text-xs text-emerald-400 font-semibold tracking-wider">
+            <p className="text-xs text-blue-400 font-semibold tracking-wider">
               INVENTORY MANAGEMENT SYSTEM
             </p>
           </div>
         </div>
 
         <div className="relative z-10 my-12 lg:my-0 max-w-lg space-y-6">
-          <span className="inline-block px-3 py-1 bg-emerald-950/80 border border-emerald-800/80 rounded-full text-xs font-semibold text-emerald-300">
+          <span className="inline-block px-3 py-1 bg-blue-950/80 border border-blue-800/80 rounded-full text-xs font-semibold text-blue-300">
             Enterprise Simplicity for Growing Business
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
@@ -93,7 +93,7 @@ export const Login = () => {
 
         {/* Demo Credentials Helper */}
         <div className="relative z-10 bg-slate-800/80 border border-slate-700/80 rounded-2xl p-5 backdrop-blur-xs max-w-md">
-          <p className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
+          <p className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">
             Click to fill test credentials:
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -103,7 +103,7 @@ export const Login = () => {
               className="p-3 bg-slate-900/90 hover:bg-slate-900 rounded-xl border border-slate-700 text-left transition-all group cursor-pointer"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-white group-hover:text-emerald-300">
+                <span className="text-xs font-bold text-white group-hover:text-blue-300">
                   Administrator
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-mono">
@@ -120,7 +120,7 @@ export const Login = () => {
               className="p-3 bg-slate-900/90 hover:bg-slate-900 rounded-xl border border-slate-700 text-left transition-all group cursor-pointer"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-white group-hover:text-emerald-300">
+                <span className="text-xs font-bold text-white group-hover:text-blue-300">
                   Staff Member
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono">
@@ -138,7 +138,7 @@ export const Login = () => {
       <div className="lg:col-span-6 xl:col-span-5 p-8 sm:p-12 lg:p-16 flex items-center justify-center">
         <div className="w-full max-w-md space-y-8">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-700">
               SECURE PORTAL
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
@@ -197,6 +197,13 @@ export const Login = () => {
               {isLoading ? "Signing in..." : "Sign In to Workspace"}
             </Button>
           </form>
+
+          <div className="pt-2 border-t border-slate-100 text-center text-sm text-slate-500">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-blue-700 hover:text-blue-800 font-bold hover:underline">
+              Create an account →
+            </Link>
+          </div>
 
           <p className="text-center text-xs text-slate-400">
             Protected by role-based authorization & session token verification.
