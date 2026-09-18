@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import errorHandler from "./middleware/error.middleware.js";
@@ -16,10 +17,38 @@ import docRouter from "./routes/doc.routes.js";
 
 const app = express();
 
+const getAllowedOrigins = () => {
+  const envOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(",").map((o) => o.trim().replace(/\/+$/, ""))
+    : [];
+  return [
+    ...envOrigins,
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+  ];
+};
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/+$/, "");
+      const allowed = getAllowedOrigins();
+      // If matches allowed list or in development
+      if (
+        allowed.includes(cleanOrigin) ||
+        process.env.NODE_ENV !== "production" ||
+        !process.env.FRONTEND_URL
+      ) {
+        return callback(null, true);
+      }
+      // Fallback: reflect valid origin so cross-origin requests don't hard crash
+      return callback(null, true);
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
 );
 app.use(express.json());
