@@ -102,6 +102,11 @@ inventory-management-system/
 
 - Node.js (v18.0.0 or higher)
 - PostgreSQL running locally or remotely (e.g., Docker, Supabase, Neon)
+_ Clone the Repository
+```bash
+git clone https://github.com/mikimek23/inventory-management-system
+cd inventory-management-system
+```
 
 ### 1. Database Creation
 
